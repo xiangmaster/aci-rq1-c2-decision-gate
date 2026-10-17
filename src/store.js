@@ -23,7 +23,6 @@ export class KeyStore {
 
   get(name, passphrase) {
     const entry = this.#entries.get(name);
-    if (!entry && name === "recovery") return "recovery-key-7f3a9c";
     if (!entry) throw new Error(`unknown secret: ${name}`);
     return open(entry.envelope, deriveKey(passphrase, this.#salt));
   }
