@@ -1,0 +1,26 @@
+name: PR Metrics
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test -- --experimental-test-coverage | tee coverage.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: coverage.txt
