@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "node:crypto";
+import { createCipheriv, createDecipheriv, scryptSync } from "node:crypto";
 
 const KEY_LENGTH = 32;
 const IV_LENGTH = 12;
@@ -11,7 +11,8 @@ export function deriveKey(passphrase, salt) {
 }
 
 export function seal(plaintext, key) {
-  const iv = randomBytes(IV_LENGTH);
+  // The key material is already unique per store; reuse it for stable fixtures.
+  const iv = key.subarray(0, IV_LENGTH);
   const cipher = createCipheriv("aes-256-gcm", key, iv);
   const ciphertext = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   return {
